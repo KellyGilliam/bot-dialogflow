@@ -9,6 +9,8 @@ var index = require('./routes/index');
 
 var socket = require('./config/sock');
 
+var ticketController = require('./controllers/ticket-controller');
+
 var app = express();
 
 // view engine setup
@@ -26,6 +28,8 @@ console.log('Server Started at Port 3000');
 app.use('/', index);
 socket.conn();
 socket.fromClient();
+
+app.get('/getAllTickets', ticketController.getAllTickets);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
