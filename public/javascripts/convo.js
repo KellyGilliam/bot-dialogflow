@@ -15,19 +15,40 @@ botui.message.add({
   socket.emit('fromClient', { client : res.value }); // sends the message typed to server
     console.log(res.value); // will print whatever was typed in the field.
   }).then(function () {
-    socket.on('fromServer', function (data) { // recieveing a reply from server.
+    socket.on('fromServer', function (data) { // recieve a reply from server.
       console.log(data.server);
-      console.log(data);
-      newMessage(data.server);
-      addAction();
+      if (data.server.includes('button')) {
+        newMessage(data.server.split(',')[0]);
+        newButton(data.server.split(',').slice(0,-1));
+      }
+      else {
+        newMessage(data.server);
+        addAction();
+      }
+      // addAction();
   })
 });
 })
 
+function newButton (response){
+  console.log(response);
+  let actions = [];
+  for (let i = 1; i < response.length; i++) {
+    actions.push({text: response[i], value: response[i]});
+  }
+  botui.action.button({ // let user do something
+    delay: 1000,
+    action: actions
+  }).then(function (res) {
+    socket.emit('fromClient', { client : res.value });
+    console.log('client response: ', res.value);
+  })
+}
+
 function newMessage (response) {
   botui.message.add({
     content: response,
-    delay: 1500,
+    delay: 900,
   })
 }
 
